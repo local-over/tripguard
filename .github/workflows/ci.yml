@@ -1,0 +1,32 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build TripGuard.app
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build & Package Bundle
+        run: |
+          chmod +x bundle.sh
+          ./bundle.sh
+
+      - name: Verify Application Bundle and DMG
+        run: |
+          ls -la TripGuard.app
+          test -f TripGuard.app/Contents/MacOS/TripGuard
+          test -f TripGuard.app/Contents/Info.plist
+          test -f TripGuard.app/Contents/Resources/AppIcon.icns
+          test -f TripGuard.dmg
+          test -f TripGuard-macos.zip
+          echo "TripGuard.app, TripGuard.dmg, and zip verification passed!"
